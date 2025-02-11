@@ -1,0 +1,48 @@
+---
+title: "Penguins Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+```{r}
+penguins |> 
+  group_by(species) |> 
+  summarize(
+    Count = n(),
+    Mean_Bill_Length = mean(bill_length_mm, na.rm = TRUE),
+    Mean_Bill_Depth = mean(bill_depth_mm, na.rm = TRUE)
+  )|> 
+ knitr::kable()
+```
+
+```{r}
+### scatter plot
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
+  geom_point() +
+  theme_minimal() +
+  labs(
+    title = "Bill Length vs. Bill Depth",
+    x = "Bill Length (mm)",
+    y = "Bill Depth (mm)",
+    color = "Species"
+  )
+```
+
+Bar Chart
+
+```{r}
+penguins |> 
+  count(species, island) |> 
+  ggplot(aes(x = species, y = n, fill = island)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(
+    title = "Penguin Species by Island",
+    x = "Species",
+    y = "Count",
+    fill = "Island"
+  )
+```
+

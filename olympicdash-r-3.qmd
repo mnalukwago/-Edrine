@@ -26,7 +26,12 @@ olympics_full <- read_csv("data/olympics.csv")
 #| label: prep-data
 olympics <- olympics_full |>
   filter(!is.na(medal)) |>
-  separate_wider_delim(cols = team, names = c("team", "suffix"), delim = "-", too_many = "merge", too_few = "align_start") |>
+  separate_wider_delim(
+    cols = team, 
+    names = c("team", "suffix"),
+    delim = "-", 
+    too_many = "merge", 
+    too_few = "align_start") |>
   select(-suffix) |>
   mutate(medal = fct_relevel(medal, "Bronze", "Silver", "Gold"))
 ```

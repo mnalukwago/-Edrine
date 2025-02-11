@@ -1,11 +1,17 @@
 ---
-title: "Olympic Games"
-format: dashboard
+title: "Olympics"
+author: "Madrine"
+format: 
+  dashboard: 
+    orientation: columns
+
+editor: visual
 ---
+
+
 
 ```{r}
 #| label: load-packages
-#| message: false
 library(tidyverse)
 library(gt)
 ```
@@ -19,24 +25,23 @@ olympics_full <- read_csv("data/olympics.csv")
 ```{r}
 #| label: prep-data
 olympics <- olympics_full |>
-  filter(
-    season == "Summer",
-    !is.na(medal)
-  ) |>
+  filter(!is.na(medal)) |>
   separate_wider_delim(
     cols = team, 
-    names = c("team", "suffix"), 
+    names = c("team", "suffix"),
     delim = "-", 
     too_many = "merge", 
-    too_few = "align_start"
-  ) |>
+    too_few = "align_start") |>
   select(-suffix) |>
   mutate(medal = fct_relevel(medal, "Bronze", "Silver", "Gold"))
+
 ```
 
-## Medals by sport
-
 ```{r}
+#| label: medals-by-sport
+#| title: Medals by sport
+#| fig-width: 10
+#| fig-asp: 0.618
 olympics |>
   mutate(
     sport = fct_lump_n(sport, n = 15),
@@ -61,9 +66,11 @@ olympics |>
   )
 ```
 
-## Medals by year
-
 ```{r}
+#| label: medals-by-year
+#| title: Medals by year
+#| fig-asp: 0.3
+#| fig-width: 10
 olympics |>
   count(year, medal) |>
   ggplot(aes(x = year, y = n, color = medal)) +
@@ -85,14 +92,61 @@ olympics |>
   )
 ```
 
-## Medals by country
-
 ```{r}
-olympics |>
-  count(team, medal) |>
-  pivot_wider(names_from = medal, values_from = n, values_fill = 0) |>
-  mutate(Total = Bronze + Gold + Silver) |>
-  relocate(Team = team, Gold, Silver, Bronze, Total) |>
-  arrange(desc(Total), Team) |>
-  gt()
+#| label: summer-calculate-most-medals
+summer_most_golds <- olympics |>
+  filter(medal == "Gold") |>
+  count(team, sort = TRUE) |>
+  slice_head(n = 1)
+
+summer_most_silvers <- olympics |>
+  filter(medal == "Silver") |>
+  count(team, sort = TRUE) |>
+  slice_head(n = 1)
+
+summer_most_bronzes <- olympics |>
+  filter(medal == "Bronze") |>
+  count(team, sort = TRUE) |>
+  slice_head(n = 1)
 ```
+
+
+::: {.valuebox icon="award-fill" color="#d4af37"}
+Most golds:
+
+`{r} summer_most_golds$n`
+
+`{r} as.character(summer_most_golds$team)`
+:::
+
+::: {.valuebox icon="award-fill" color="#c0c0c0"}
+Most silvers:
+
+`{r} summer_most_silvers$n`
+
+`{r} as.character(summer_most_silvers$team)`
+:::
+
+::: {.valuebox icon="award-fill" color="#cd7f32"}
+Most bronzes:
+
+`{r} summer_most_bronzes$n`
+
+`{r} as.character(summer_most_bronzes$team)`
+:::
+
+::: {.valuebox icon="award-fill" color="#d4af37"}
+Most golds:
+
+`{r} summer_most_golds$n`
+
+`{r} as.character(summer_most_golds$team)`
+:::
+
+::: {.valuebox icon= "award-fill" colour = "skyblue"}
+most golds:
+`{r} summer_most_golds$n`
+`{r} as.character(summer_most_golds$team)`
+:::
+
+
